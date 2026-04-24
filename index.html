@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Pendaftaran MTQ - Desain Islami Premium</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Library untuk download gambar -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+        }
+
+        .arabic-font {
+            font-family: 'Amiri', serif;
+        }
+
+        /* Gradasi Latar Belakang ID Card */
+        .card-bg-gradient {
+            background: linear-gradient(180deg, #ffffff 0%, #f0fdf4 40%, #dcfce7 100%) !important;
+        }
+
+        /* Pola Islami Background Header */
+        .islamic-pattern {
+            background-color: #065f46;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='%23ffffff' fill-opacity='0.08'%3E%3Cpath d='M0 0h80v80H0z'/%3E%3Cpath d='M40 0l40 40-40 40L0 40z'/%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white; padding: 0; margin: 0; }
+        }
+
+        /* Portrait ID Card Style */
+        .id-card-portrait {
+            width: 53.98mm;
+            height: 85.6mm;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border: 1px solid #c8e6c9;
+        }
+
+        .id-card-header {
+            height: 18%;
+            padding: 4px;
+            text-align: center;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 3px solid #fbbf24;
+            z-index: 20;
+        }
+
+        .id-card-body {
+            flex: 1;
+            padding: 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .mosque-silhouette {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23065f46' fill-opacity='0.08' d='M0,224L48,213.3C96,203,192,181,288,186.7C384,192,480,224,576,218.7C672,213,768,171,864,149.3C960,128,1056,128,1152,149.3C1248,171,1344,213,1392,234.7L1440,256L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: bottom;
+            background-size: cover;
+            z-index: 1;
+        }
+
+        .photo-frame {
+            width: 24mm;
+            height: 32mm;
+            border: 2px solid #065f46;
+            padding: 1.5px;
+            border-radius: 4px;
+            margin-bottom: 6px;
+            background: #fff;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 30;
+        }
+
+        .photo-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .id-content {
+            z-index: 40;
+            width: 100%;
+            text-align: center;
+        }
+
+        .text-label {
+            font-size: 7px;
+            color: #065f46;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 1px;
+        }
+
+        .text-value-large {
+            font-size: 10px;
+            font-weight: 800;
+            color: #064e3b;
+            line-height: 1.1;
+            text-transform: uppercase;
+            word-wrap: break-word;
+            margin-bottom: 4px;
+        }
+
+        .text-value-small {
+            font-size: 9px;
+            font-weight: 700;
+            color: #1a1a1a;
+            line-height: 1.1;
+            word-wrap: break-word;
+            display: block;
+        }
+
+        .qr-position {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            z-index: 50;
+            text-align: center;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto no-print">
+        <!-- Judul Halaman -->
+        <div class="text-center mb-10">
+            <div class="inline-block p-2 px-4 bg-emerald-100 text-emerald-800 rounded-full text-sm font-bold mb-2 uppercase tracking-widest">Aplikasi Kepanitiaan</div>
+            <h1 class="text-4xl font-bold text-emerald-900 arabic-font">Sistem Pendaftaran MTQ</h1>
+            <p class="text-gray-600 mt-2 italic">Entri data kafilah dan cetak ID card otomatis.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- Form Section -->
+            <div class="lg:col-span-4 bg-white p-6 rounded-2xl shadow-xl h-fit border-b-8 border-emerald-700">
+                <div class="flex items-center gap-2 mb-6">
+                    <div class="p-2 bg-emerald-600 rounded-lg text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                    </div>
+                    <h2 class="text-xl font-bold text-gray-800 uppercase">Input Peserta</h2>
+                </div>
+
+                <form id="registrationForm" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Nama Lengkap</label>
+                        <input type="text" id="nama" placeholder="Ahmad Fauzi, S.Pd" required class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none">
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Tempat Lahir</label>
+                            <input type="text" id="tempat_lahir" placeholder="Jakarta" required class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Tanggal Lahir</label>
+                            <input type="date" id="tanggal_lahir" required class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none text-sm">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Utusan / Desa / Kafilah</label>
+                        <input type="text" id="desa" placeholder="Contoh: Desa Suka Maju Jaya" required class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Cabang Lomba</label>
+                        <select id="cabang" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none">
+                            <option>Tilawah Dewasa Putra/Putri</option>
+                            <option>Tilawah Anak-anak Putra/Putri</option>
+                            <option>Hifdzil Qur'an 1 Juz & Ma'at Tilawah</option>
+                            <option>Hifdzil Qur'an 5 Juz & Ma'at Tilawah</option>
+                            <option>Fahmil Qur'an Berkelompok</option>
+                            <option>Syarhil Qur'an Berkelompok</option>
+                            <option>Khat Al-Qur'an Dekorasi/Kontemporer</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1 text-emerald-700">Foto Peserta</label>
+                        <div class="relative group cursor-pointer border-2 border-dashed border-emerald-200 rounded-xl p-4 text-center hover:bg-emerald-50 transition-colors">
+                            <input type="file" id="foto" accept="image/*" required class="absolute inset-0 opacity-0 cursor-pointer">
+                            <div class="space-y-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-8 w-8 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                <p class="text-sm text-gray-600 font-medium">Klik untuk upload foto</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" id="btnSubmit" class="w-full bg-emerald-700 text-white font-bold py-4 rounded-xl hover:bg-emerald-800 shadow-lg transition-all uppercase tracking-widest">
+                        Simpan & Lihat Daftar
+                    </button>
+                </form>
+            </div>
+
+            <!-- Table Section -->
+            <div class="lg:col-span-8 bg-white p-6 rounded-2xl shadow-xl border-t-8 border-emerald-700">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                    <h2 class="text-xl font-bold text-gray-800 uppercase">Database Peserta</h2>
+                    <div class="flex gap-2">
+                        <button onclick="exportData()" class="flex items-center gap-2 px-4 py-2 bg-emerald-100 text-emerald-800 rounded-lg font-bold text-xs hover:bg-emerald-200 transition-colors border border-emerald-200 uppercase tracking-tighter">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            Rekapitulasi (Excel/CSV)
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="min-w-full text-sm">
+                        <thead>
+                            <tr class="bg-emerald-50 text-emerald-900 border-b border-emerald-100">
+                                <th class="px-4 py-4 font-bold text-left uppercase">Foto</th>
+                                <th class="px-4 py-4 font-bold text-left uppercase">Nama & TTL</th>
+                                <th class="px-4 py-4 font-bold text-left uppercase">Utusan & Cabang</th>
+                                <th class="px-4 py-4 font-bold text-center uppercase">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="participantList" class="divide-y divide-gray-100">
+                            <!-- JS Injection -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Preview ID CARD -->
+    <div id="printModal" class="hidden fixed inset-0 bg-emerald-950/95 backdrop-blur-md flex items-center justify-center p-4 z-50 no-print">
+        <div class="bg-white p-6 rounded-3xl max-w-sm w-full shadow-2xl overflow-y-auto max-h-screen">
+            <div class="text-center mb-4">
+                <h3 class="text-xl font-bold text-gray-800 uppercase">Preview ID Card</h3>
+                <p class="text-[10px] text-gray-400 mt-1">*TTL hanya disimpan di database, tidak dicetak di kartu.</p>
+            </div>
+            
+            <div id="captureArea" class="flex justify-center mb-6">
+                <div id="idCardPreview">
+                    <!-- Dinamis -->
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <button onclick="downloadImage()" class="flex items-center justify-center gap-2 w-full py-3 bg-emerald-700 text-white rounded-xl font-bold hover:bg-emerald-800 shadow-md transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                    Download Image (JPG)
+                </button>
+                <button onclick="window.print()" class="flex items-center justify-center gap-2 w-full py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 shadow-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd" />
+                    </svg>
+                    Cetak Langsung
+                </button>
+                <button onclick="closeModal()" class="w-full py-2 text-gray-400 font-semibold hover:text-gray-600">Batal / Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Area Khusus Cetak -->
+    <div id="printArea" class="hidden print-only"></div>
+
+    <script>
+        let participants = JSON.parse(localStorage.getItem('mtq_db_v2')) || [];
+
+        const form = document.getElementById('registrationForm');
+        const listContainer = document.getElementById('participantList');
+        const modal = document.getElementById('printModal');
+        const idCardPreview = document.getElementById('idCardPreview');
+        const printArea = document.getElementById('printArea');
+
+        renderList();
+
+        function getBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btnSubmit = document.getElementById('btnSubmit');
+            const fileInput = document.getElementById('foto');
+            
+            btnSubmit.disabled = true;
+            btnSubmit.innerText = "Memproses...";
+
+            try {
+                let fotoBase64 = "";
+                if (fileInput.files.length > 0) {
+                    fotoBase64 = await getBase64(fileInput.files[0]);
+                }
+
+                const entry = {
+                    id: Date.now(),
+                    nama: document.getElementById('nama').value,
+                    tempat_lahir: document.getElementById('tempat_lahir').value,
+                    tanggal_lahir: document.getElementById('tanggal_lahir').value,
+                    desa: document.getElementById('desa').value,
+                    cabang: document.getElementById('cabang').value,
+                    foto: fotoBase64
+                };
+
+                participants.unshift(entry);
+                localStorage.setItem('mtq_db_v2', JSON.stringify(participants));
+                renderList();
+                form.reset();
+            } catch (err) {
+                console.error(err);
+            } finally {
+                btnSubmit.disabled = false;
+                btnSubmit.innerText = "Simpan & Lihat Daftar";
+            }
+        });
+
+        function formatDate(dateStr) {
+            if(!dateStr) return "-";
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+        }
+
+        function renderList() {
+            listContainer.innerHTML = '';
+            if (participants.length === 0) {
+                listContainer.innerHTML = '<tr><td colspan="4" class="px-4 py-8 text-center text-gray-400">Belum ada peserta di database.</td></tr>';
+                return;
+            }
+
+            participants.forEach(p => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-50 transition-colors border-b border-gray-50";
+                tr.innerHTML = `
+                    <td class="px-4 py-4">
+                        <div class="h-12 w-10 bg-gray-200 rounded border border-gray-100 overflow-hidden shadow-sm">
+                            <img src="${p.foto || ''}" class="h-full w-full object-cover" onerror="this.src='https://via.placeholder.com/150'">
+                        </div>
+                    </td>
+                    <td class="px-4 py-4">
+                        <div class="font-bold text-gray-900 uppercase leading-tight">${p.nama}</div>
+                        <div class="text-[10px] text-gray-500 font-medium">${p.tempat_lahir || '-'}, ${formatDate(p.tanggal_lahir)}</div>
+                    </td>
+                    <td class="px-4 py-4">
+                        <div class="text-xs text-emerald-700 font-bold uppercase">${p.desa}</div>
+                        <div class="text-[10px] text-gray-500 truncate max-w-[150px]">${p.cabang}</div>
+                    </td>
+                    <td class="px-4 py-4 text-center whitespace-nowrap">
+                        <button onclick="preparePrint(${p.id})" class="p-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 shadow-sm" title="Preview ID Card">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                        </button>
+                        <button onclick="deleteData(${p.id})" class="p-2 text-red-400 hover:text-red-600 ml-1" title="Hapus Data">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                    </td>
+                `;
+                listContainer.appendChild(tr);
+            });
+        }
+
+        function deleteData(id) {
+            if(confirm('Hapus data peserta ini dari database panitia?')) {
+                participants = participants.filter(p => p.id !== id);
+                localStorage.setItem('mtq_db_v2', JSON.stringify(participants));
+                renderList();
+            }
+        }
+
+        // Fitur Ekspor Data ke CSV (Bisa dibuka di Excel)
+        function exportData() {
+            if (participants.length === 0) {
+                alert('Database masih kosong.');
+                return;
+            }
+
+            // Header kolom
+            let csvContent = "ID,Nama Lengkap,Tempat Lahir,Tanggal Lahir,Kafilah/Utusan,Cabang Lomba\n";
+            
+            // Baris data
+            participants.forEach(p => {
+                let row = [
+                    p.id,
+                    `"${p.nama}"`,
+                    `"${p.tempat_lahir}"`,
+                    p.tanggal_lahir,
+                    `"${p.desa}"`,
+                    `"${p.cabang}"`
+                ].join(",");
+                csvContent += row + "\n";
+            });
+
+            // Download file
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", `Rekapitulasi_MTQ_2026_${Date.now()}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function preparePrint(id) {
+            const p = participants.find(item => item.id === id);
+            if (!p) return;
+
+            const cardHTML = `
+                <div class="id-card-portrait card-bg-gradient" id="finalCard">
+                    <div class="id-card-header islamic-pattern">
+                        <div class="text-[7px] uppercase tracking-[1.2px] font-bold mb-0.5">Musabaqah Tilawatil Qur'an</div>
+                        <div class="arabic-font text-lg leading-tight font-bold">المسابقة تلاوة القرآن</div>
+                        <div class="text-[8px] font-bold mt-0.5 text-yellow-300">TINGKAT KECAMATAN • 2026</div>
+                    </div>
+
+                    <div class="id-card-body">
+                        <div class="mosque-silhouette"></div>
+                        <div class="text-[8px] text-emerald-900 font-extrabold uppercase tracking-[3px] mb-2 z-10">KARTU PESERTA</div>
+                        
+                        <div class="photo-frame">
+                            ${p.foto ? `<img src="${p.foto}">` : '<div class="h-full w-full bg-gray-100 flex items-center justify-center text-[10px] text-gray-400 uppercase">Foto 3x4</div>'}
+                        </div>
+
+                        <div class="id-content px-3 mt-1">
+                            <div class="mb-2">
+                                <div class="text-label">Nama Lengkap</div>
+                                <div class="text-value-large">${p.nama}</div>
+                            </div>
+                            
+                            <div class="space-y-1.5 bg-white/70 p-2 rounded-lg border border-emerald-100 shadow-sm text-left">
+                                <div>
+                                    <div class="text-label mt-0">Asal / Kafilah</div>
+                                    <div class="text-value-small">${p.desa}</div>
+                                </div>
+                                <div class="border-t border-emerald-100/80 pt-1">
+                                    <div class="text-label mt-0">Cabang Lomba</div>
+                                    <div class="text-value-small font-bold text-emerald-800">${p.cabang}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="qr-position">
+                            <div class="bg-white p-0.5 rounded shadow-sm border border-emerald-100">
+                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=45x45&data=MTQ-PESERTA-${p.id}" width="36" height="36" alt="QR">
+                            </div>
+                            <div class="text-[5px] font-bold mt-0.5 text-emerald-900 tracking-tighter">ID: ${p.id.toString().slice(-6)}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="h-2 bg-emerald-800 w-full flex">
+                         <div class="h-full w-1/3 bg-yellow-500"></div>
+                         <div class="h-full w-1/3 bg-emerald-700"></div>
+                         <div class="h-full w-1/3 bg-yellow-500"></div>
+                    </div>
+                </div>
+            `;
+
+            idCardPreview.innerHTML = cardHTML;
+            printArea.innerHTML = cardHTML;
+            modal.classList.remove('hidden');
+        }
+
+        async function downloadImage() {
+            const element = document.getElementById('idCardPreview');
+            const downloadBtn = document.querySelector('button[onclick="downloadImage()"]');
+            
+            downloadBtn.disabled = true;
+            downloadBtn.innerText = "Proses...";
+
+            try {
+                const canvas = await html2canvas(element, {
+                    scale: 4, 
+                    useCORS: true,
+                    backgroundColor: null
+                });
+                
+                const image = canvas.toDataURL("image/jpeg", 1.0);
+                const link = document.createElement('a');
+                link.download = `ID_CARD_MTQ_${Date.now()}.jpg`;
+                link.href = image;
+                link.click();
+            } catch (err) {
+                console.error(err);
+            } finally {
+                downloadBtn.disabled = false;
+                downloadBtn.innerText = "Download Image (JPG)";
+            }
+        }
+
+        function closeModal() {
+            modal.classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
